@@ -59,7 +59,7 @@ class MyVideoTransformer(VideoTransformerBase):
 webrtc_ctx = webrtc_streamer(
     key="yolo_filter", 
     # mode=WebRtcMode.SENDRECV,
-    rtc_configuration==RTC_CONFIGURATION,
+    rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
     video_processor_factory=MyVideoTransformer,
     async_processing=True,
