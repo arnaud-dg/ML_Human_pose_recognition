@@ -81,5 +81,6 @@ def play_webcam(conf, model):
         media_stream_constraints={"video": True, "audio": False},
     )
 
+confidence = 50
 st.title("Webcam Object Detection")
 play_webcam(confidence, model)
