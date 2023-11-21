@@ -1,17 +1,28 @@
+from ultralytics import YOLO
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer
+from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+import numpy as np
+from PIL import Image
+import av
+import cv2
+from pytube import YouTube
+
+def load_model(model_path):
+    """
+    Loads a YOLO object detection model from the specified model_path.
+
+    Parameters:
+        model_path (str): The path to the YOLO model file.
+
+    Returns:
+        A YOLO object detection model.
+    """
+    model = YOLO(model_path)
+    return model
 
 st.title("My first Streamlit app")
 st.write("Hello, world")
 webrtc_streamer(key="example")
-
-
-# from ultralytics import YOLO
-# import streamlit as st
-# import cv2
-# from pytube import YouTube
-
-# import settings
 
 
 # def load_model(model_path):
@@ -113,41 +124,41 @@ webrtc_streamer(key="example")
 #             st.sidebar.error("Error loading video: " + str(e))
 
 
-# def play_webcam(conf, model):
-#     """
-#     Plays a webcam stream. Detects Objects in real-time using the YOLOv8 object detection model.
+def play_webcam(conf, model):
+    """
+    Plays a webcam stream. Detects Objects in real-time using the YOLOv8 object detection model.
 
-#     Parameters:
-#         conf: Confidence of YOLOv8 model.
-#         model: An instance of the `YOLOv8` class containing the YOLOv8 model.
+    Parameters:
+        conf: Confidence of YOLOv8 model.
+        model: An instance of the `YOLOv8` class containing the YOLOv8 model.
 
-#     Returns:
-#         None
+    Returns:
+        None
 
-#     Raises:
-#         None
-#     """
-#     source_webcam = settings.WEBCAM_PATH
-#     is_display_tracker, tracker = display_tracker_options()
-#     if st.sidebar.button('Detect Objects'):
-#         try:
-#             vid_cap = cv2.VideoCapture(source_webcam)
-#             st_frame = st.empty()
-#             while (vid_cap.isOpened()):
-#                 success, image = vid_cap.read()
-#                 if success:
-#                     _display_detected_frames(conf,
-#                                              model,
-#                                              st_frame,
-#                                              image,
-#                                              is_display_tracker,
-#                                              tracker,
-#                                              )
-#                 else:
-#                     vid_cap.release()
-#                     break
-#         except Exception as e:
-#             st.sidebar.error("Error loading video: " + str(e))
+    Raises:
+        None
+    """
+    source_webcam = settings.WEBCAM_PATH
+    is_display_tracker, tracker = display_tracker_options()
+    if st.sidebar.button('Detect Objects'):
+        try:
+            vid_cap = cv2.VideoCapture(source_webcam)
+            st_frame = st.empty()
+            while (vid_cap.isOpened()):
+                success, image = vid_cap.read()
+                if success:
+                    _display_detected_frames(conf,
+                                             model,
+                                             st_frame,
+                                             image,
+                                             is_display_tracker,
+                                             tracker,
+                                             )
+                else:
+                    vid_cap.release()
+                    break
+        except Exception as e:
+            st.sidebar.error("Error loading video: " + str(e))
 
 
 # def play_stored_video(conf, model):
