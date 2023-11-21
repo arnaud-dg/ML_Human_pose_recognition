@@ -23,9 +23,14 @@ except Exception as ex:
     st.error(f"Unable to load model.")
     st.error(ex)
 
+def video_frame_callback(frame):
+    img = frame.to_ndarray(format="bgr24")
 
+    flipped = img[::-1,:,:]
 
-webrtc_streamer(key="example")
+    return av.VideoFrame.from_ndarray(flipped, format="bgr24")
+
+webrtc_streamer(key="example", video_frame_callback=video_frame_callback)
 
 
 # def display_tracker_options():
