@@ -2,4 +2,4 @@ streamlit==1.25.0
 streamlit-webrtc==0.47.1
 torch==2.0.1
 ultralytics==8.0.150
-opencv-python==4.8.0.74
+opencv-python-headless
