@@ -33,9 +33,9 @@ def video_frame_callback(frame):
 webrtc_streamer(
     key="example", 
     video_frame_callback=video_frame_callback, 
-    rtc_configuration={  # Add this config
-        "iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
-        )
+    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+    media_stream_constraints={"video": True, "audio": False},
+    )
 
 
 # def display_tracker_options():
