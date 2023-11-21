@@ -77,7 +77,7 @@ def play_webcam(conf, model):
     webrtc_streamer(
         key="example",
         video_transformer_factory=lambda: MyVideoTransformer(conf, model),
-        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         media_stream_constraints={"video": True, "audio": False},
     )
 
