@@ -58,10 +58,10 @@ class MyVideoTransformer(VideoTransformerBase):
 
 webrtc_ctx = webrtc_streamer(
     key="yolo_filter", 
+    video_transformer_factory=lambda: MyVideoTransformer(conf, model),
     # mode=WebRtcMode.SENDRECV,
     rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
-    video_processor_factory=lambda: MyVideoTransformer(conf, model),
     async_processing=True,
 )
 
