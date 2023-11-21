@@ -1,11 +1,15 @@
 from ultralytics import YOLO
 import streamlit as st
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
+from streamlit_webrtc import VideoProcessorBase, RTCConfiguration, WebRtcMode, webrtc_streamer
 import numpy as np
 from PIL import Image
 import av
 import cv2
 import settings
+
+RTC_CONFIGURATION = RTCConfiguration(
+    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+)
 
 # Setting page layout
 st.set_page_config(
@@ -23,20 +27,44 @@ except Exception as ex:
     st.error(f"Unable to load model.")
     st.error(ex)
 
-def video_frame_callback(frame):
-    img = frame.to_ndarray(format="bgr24")
+def main():
+    st.header("Live stream processing")
 
-    flipped = img[::-1,:,:]
-
-    return av.VideoFrame.from_ndarray(flipped, format="bgr24")
-
-webrtc_streamer(
-    key="example", 
-    video_frame_callback=video_frame_callback, 
-    rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-    media_stream_constraints={"video": True, "audio": False},
+    sign_language_det = "Ergonomy Dectection System"
+    app_mode = st.sidebar.selectbox( "Choose the app mode",
+        [
+            Ergonomy_analyzer
+        ],
     )
 
+    st.subheader(app_mode)
+
+    if app_mode == Ergonomy_analyzer:
+        Ergonomy_analyzer_model()
+ 
+
+def Ergonomy_analyzer_model():
+
+    class OpenCVVideoProcessor(VideoProcessorBase):
+        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
+            img = frame.to_ndarray(format="bgr24")
+            results = model(img)
+            print(results)
+            
+            return av.VideoFrame.from_ndarray(image,format="bgr24")
+
+    webrtc_ctx = webrtc_streamer(
+        
+        key="yolo_filter", 
+        mode=WebRtcMode.SENDRECV,
+        rtc_configuration==RTC_CONFIGURATION,
+        media_stream_constraints={"video": True, "audio": False},
+        video_processor_factory=OpenCVVideoProcessor,
+        async_processing=True,
+    )
+
+if __name__ == "__main__":
+    main()
 
 # def display_tracker_options():
 #     display_tracker = st.radio("Display Tracker", ('Yes', 'No'))
