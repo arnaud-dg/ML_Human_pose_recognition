@@ -14,14 +14,19 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
-st.title("Ergonomy Detection")
+st.title("Webcam ergonomy detection using YOLOv8")
 
 # Load Pre-trained ML Model
 try:
     model = YOLO('yolov8n-pose.pt')
 except Exception as ex:
-    st.error(f"Unable to load model. Check the specified path: {model_path}")
+    st.error(f"Unable to load model.")
     st.error(ex)
+
+
+
+webrtc_streamer(key="example")
+
 
 # def display_tracker_options():
 #     display_tracker = st.radio("Display Tracker", ('Yes', 'No'))
@@ -30,9 +35,6 @@ except Exception as ex:
 #         tracker_type = st.radio("Tracker", ("bytetrack.yaml", "botsort.yaml"))
 #         return is_display_tracker, tracker_type
 #     return is_display_tracker, None
-
-webrtc_streamer(key="example")
-
 
 # def _display_detected_frames(conf, model, st_frame, image, is_display_tracking=None, tracker=None):
 #     """
