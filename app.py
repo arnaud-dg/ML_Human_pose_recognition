@@ -5,7 +5,6 @@ import numpy as np
 from PIL import Image
 import av
 import cv2
-from pytube import YouTube
 import settings
 
 # Setting page layout
@@ -23,6 +22,48 @@ except Exception as ex:
     st.error(f"Unable to load model. Check the specified path: {model_path}")
     st.error(ex)
 
+def display_tracker_options():
+    display_tracker = st.radio("Display Tracker", ('Yes', 'No'))
+    is_display_tracker = True if display_tracker == 'Yes' else False
+    if is_display_tracker:
+        tracker_type = st.radio("Tracker", ("bytetrack.yaml", "botsort.yaml"))
+        return is_display_tracker, tracker_type
+    return is_display_tracker, None
+
+
+def _display_detected_frames(conf, model, st_frame, image, is_display_tracking=None, tracker=None):
+    """
+    Display the detected objects on a video frame using the YOLOv8 model.
+
+    Args:
+    - conf (float): Confidence threshold for object detection.
+    - model (YoloV8): A YOLOv8 object detection model.
+    - st_frame (Streamlit object): A Streamlit object to display the detected video.
+    - image (numpy array): A numpy array representing the video frame.
+    - is_display_tracking (bool): A flag indicating whether to display object tracking (default=None).
+
+    Returns:
+    None
+    """
+
+    # Resize the image to a standard size
+    image = cv2.resize(image, (720, int(720*(9/16))))
+
+    # Display object tracking, if specified
+    if is_display_tracking:
+        res = model.track(image, conf=conf, persist=True, tracker=tracker)
+    else:
+        # Predict the objects in the image using the YOLOv8 model
+        res = model.predict(image, conf=conf)
+
+    # # Plot the detected objects on the video frame
+    res_plotted = res[0].plot()
+    st_frame.image(res_plotted,
+                   caption='Detected Video',
+                   channels="BGR",
+                   use_column_width=True
+                   )
+
 def play_webcam(conf, model):
     """
     Plays a webcam stream. Detects Objects in real-time using the YOLO object detection model.
@@ -33,13 +74,11 @@ def play_webcam(conf, model):
     Raises:
         None
     """
-    st.sidebar.title("Webcam Object Detection")
-
     webrtc_streamer(
         key="example"
-        # video_transformer_factory=lambda: MyVideoTransformer(conf, model),
-        # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
-        # media_stream_constraints={"video": True, "audio": False},
+        video_transformer_factory=lambda: MyVideoTransformer(conf, model),
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        media_stream_constraints={"video": True, "audio": False},
     )
 
 st.title("Webcam Object Detection")
