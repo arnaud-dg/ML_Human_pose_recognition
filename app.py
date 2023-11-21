@@ -20,6 +20,8 @@ st.set_page_config(
 )
 st.title("Webcam ergonomy detection using YOLOv8")
 
+conf = 25
+
 # Load Pre-trained ML Model
 try:
     model = YOLO('yolov8n-pose.pt')
@@ -27,44 +29,42 @@ except Exception as ex:
     st.error(f"Unable to load model.")
     st.error(ex)
 
-def main():
-    st.header("Live stream processing")
+class MyVideoTransformer(VideoTransformerBase):
+    def __init__(self, conf, model):
+        self.conf = conf
+        self.model = model
 
-    sign_language_det = "Ergonomy Dectection System"
-    app_mode = st.sidebar.selectbox( "Choose the app mode",
-        [
-            Ergonomy_analyzer
-        ],
-    )
+    def recv(self, frame):
+        image = frame.to_ndarray(format="bgr24")
+        processed_image = self._display_detected_frames(image)
+        st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
 
-    st.subheader(app_mode)
+    def _display_detected_frames(self, image):
+        orig_h, orig_w = image.shape[0:2]
+        width = 720  # Set the desired width for processing
 
-    if app_mode == Ergonomy_analyzer:
-        Ergonomy_analyzer_model()
- 
+        # cv2.resize used in a forked thread may cause memory leaks
+        input = np.asarray(Image.fromarray(image).resize((width, int(width * orig_h / orig_w))))
 
-def Ergonomy_analyzer_model():
+        if self.model is not None:
+            # Perform object detection using YOLO model
+            res = self.model.predict(input, conf=self.conf)
 
-    class OpenCVVideoProcessor(VideoProcessorBase):
-        def recv(self, frame: av.VideoFrame) -> av.VideoFrame:
-            img = frame.to_ndarray(format="bgr24")
-            results = model(img)
-            print(results)
-            
-            return av.VideoFrame.from_ndarray(image,format="bgr24")
+            # Plot the detected objects on the video frame
+            res_plotted = res[0].plot()
+            return res_plotted
 
-    webrtc_ctx = webrtc_streamer(
-        
-        key="yolo_filter", 
-        mode=WebRtcMode.SENDRECV,
-        rtc_configuration==RTC_CONFIGURATION,
-        media_stream_constraints={"video": True, "audio": False},
-        video_processor_factory=OpenCVVideoProcessor,
-        async_processing=True,
-    )
+        return input
 
-if __name__ == "__main__":
-    main()
+webrtc_ctx = webrtc_streamer(
+    key="yolo_filter", 
+    # mode=WebRtcMode.SENDRECV,
+    rtc_configuration==RTC_CONFIGURATION,
+    media_stream_constraints={"video": True, "audio": False},
+    video_processor_factory=MyVideoTransformer,
+    async_processing=True,
+)
+
 
 # def display_tracker_options():
 #     display_tracker = st.radio("Display Tracker", ('Yes', 'No'))
