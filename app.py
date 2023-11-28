@@ -10,7 +10,7 @@ import cv2
 import settings
 
 # Paramètres et fonctions de settings.py et helper.py
-# ... contenu de settings.py ...
+WEBCAM_PATH = 0
 # ... contenu de helper.py ...
 
 # Configuration de la page Streamlit
@@ -45,6 +45,8 @@ class MyVideoTransformer(VideoTransformerBase):
         if self.model is not None:
             # Perform object detection using YOLO model
             res = self.model.predict(input, conf=self.conf)
+            print(res)
+            str_result = ",".join(res)
 
             # Plot the detected objects on the video frame
             res_plotted = res[0].plot()
@@ -75,3 +77,5 @@ def play_webcam(conf, model):
 confidence = 0.4  # Définir la valeur de confiance
 model = YOLO('yolov8n-pose.pt')  # Charger le modèle
 play_webcam(confidence, model)
+
+st.write(str_result)
