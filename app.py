@@ -23,7 +23,7 @@ st.set_page_config(
 
 # Titre et description
 st.title("Ergonomy Detection Bot")
-st.markdown('Ouvrez votre webcam et cliquez sur le bouton "Start" pour commencer l'acquisition.')
+st.markdown('Ouvrez votre webcam et cliquez sur le bouton Start pour commencer l acquisition.')
 
 class MyVideoTransformer(VideoTransformerBase):
     def __init__(self, conf, model):
@@ -67,7 +67,7 @@ def play_webcam(conf, model):
     webrtc_streamer(
         key="example",
         video_transformer_factory=lambda: MyVideoTransformer(conf, model),
-        # rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
+        rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         media_stream_constraints={"video": True, "audio": False},
     )
 
