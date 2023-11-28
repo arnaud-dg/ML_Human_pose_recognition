@@ -46,7 +46,6 @@ class MyVideoTransformer(VideoTransformerBase):
             # Perform object detection using YOLO model
             res = self.model.predict(input, conf=self.conf)
             print(res)
-            str_result = ",".join(res)
 
             # Plot the detected objects on the video frame
             res_plotted = res[0].plot()
@@ -78,4 +77,3 @@ confidence = 0.4  # Définir la valeur de confiance
 model = YOLO('yolov8n-pose.pt')  # Charger le modèle
 play_webcam(confidence, model)
 
-st.write(str_result)
