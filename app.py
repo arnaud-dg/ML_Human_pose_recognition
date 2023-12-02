@@ -12,6 +12,7 @@ import settings
 # Paramètres et fonctions de settings.py et helper.py
 WEBCAM_PATH = 0
 # ... contenu de helper.py ...
+model = YOLO('yolov8n-pose.pt')
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -25,34 +26,52 @@ st.set_page_config(
 st.title("Ergonomy Detection Bot")
 st.markdown('Ouvrez votre webcam et cliquez sur le bouton Start pour commencer l acquisition.')
 
-class MyVideoTransformer(VideoTransformerBase):
-    def __init__(self, conf, model):
-        self.conf = conf
-        self.model = model
+# class MyVideoTransformer(VideoTransformerBase):
+#     def __init__(self, conf, model):
+#         self.conf = conf
+#         self.model = model
 
+#     def recv(self, frame):
+#         image = frame.to_ndarray(format="bgr24")
+#         processed_image = self._display_detected_frames(image)
+#         st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
+
+#     def _display_detected_frames(self, image):
+#         orig_h, orig_w = image.shape[0:2]
+#         width = 720  # Set the desired width for processing
+
+#         # cv2.resize used in a forked thread may cause memory leaks
+#         input = np.asarray(Image.fromarray(image).resize((width, int(width * orig_h / orig_w))))
+
+#         if self.model is not None:
+#             # Perform object detection using YOLO model
+#             res = self.model.predict(input, conf=self.conf)
+#             print(res)
+
+#             # Plot the detected objects on the video frame
+#             res_plotted = res[0].plot()
+#             return res_plotted
+
+#         return input
+
+def process(image):
+    # image.flags.writeable = False
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = model(image)
+    result_keypoint = results.keypoints.xyn.cpu().numpy()[0]
+    # Draw the hand annotations on the image.
+    # image.flags.writeable = True
+    # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    # print(results)
+    image_draw = results.plot(boxes=False)
+    image_draw = cv2.cvtColor(image_draw, cv2.COLOR_BGR2RGB)
+    return cv2.flip(image, 1)
+
+class VideoProcessor:
     def recv(self, frame):
-        image = frame.to_ndarray(format="bgr24")
-        processed_image = self._display_detected_frames(image)
-        st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
-
-    def _display_detected_frames(self, image):
-        orig_h, orig_w = image.shape[0:2]
-        width = 720  # Set the desired width for processing
-
-        # cv2.resize used in a forked thread may cause memory leaks
-        input = np.asarray(Image.fromarray(image).resize((width, int(width * orig_h / orig_w))))
-
-        if self.model is not None:
-            # Perform object detection using YOLO model
-            res = self.model.predict(input, conf=self.conf)
-            print(res)
-
-            # Plot the detected objects on the video frame
-            res_plotted = res[0].plot()
-            return res_plotted
-
-        return input
-
+        img = frame.to_ndarray(format="bgr24")
+        img = process(img)
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
 
 # Configuration de la webcam
 def play_webcam(conf, model):
@@ -67,7 +86,8 @@ def play_webcam(conf, model):
     """
     webrtc_streamer(
         key="example",
-        video_transformer_factory=lambda: MyVideoTransformer(conf, model),
+        video_processor_factory=VideoProcessor,
+        # video_transformer_factory=lambda: MyVideoTransformer(conf, model),
         rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
         media_stream_constraints={"video": True, "audio": False},
     )
