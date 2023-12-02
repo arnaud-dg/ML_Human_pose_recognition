@@ -59,7 +59,7 @@ def process(image):
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = model(image)
     result_keypoint = results.keypoints.xyn.cpu().numpy()[0]
-    print(result_keypoint)
+    print(results)
     # Draw the hand annotations on the image.
     # image.flags.writeable = True
     # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
