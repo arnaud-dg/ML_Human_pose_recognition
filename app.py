@@ -24,6 +24,7 @@ class MyVideoTransformer(VideoTransformerBase):
         return results[0].plot()
 
 # Stream webcam with YOLO model
-webrtc_streamer(key="example", video_processor_factory=MyVideoTransformer, 
+webrtc_streamer(key="example", 
+                video_processor_factory=MyVideoTransformer, 
                 rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]},
                 media_stream_constraints={"video": True, "audio": False})
