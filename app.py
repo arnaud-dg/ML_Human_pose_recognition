@@ -48,7 +48,7 @@ class MyVideoTransformer(VideoTransformerBase):
             print(result_keypoint)
 
             # Plot the detected objects on the video frame
-            res_plotted = res[0].plot()
+            res_plotted = results[0].plot()
             return res_plotted
 
         return input
