@@ -70,9 +70,9 @@ def process(image):
 
 class VideoProcessor:
     def recv(self, frame):
-        img = frame.to_ndarray(format="bgr24")
-        img = process(img)
-        return av.VideoFrame.from_ndarray(img, format="bgr24")
+        image = frame.to_ndarray(format="bgr24")
+        processed_image = process(image)
+        st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
 
 # Configuration de la webcam
 def play_webcam(conf, model):
