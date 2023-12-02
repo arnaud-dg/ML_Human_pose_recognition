@@ -16,7 +16,8 @@ class MyVideoTransformer(VideoTransformerBase):
 
     def recv(self, frame):
         image = frame.to_ndarray(format="bgr24")
-        return self.process_image(image)
+        processed_image = self.process_image(image)
+        st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
 
     def process_image(self, image):
         input = np.asarray(Image.fromarray(image).resize((720, int(720 * image.shape[0] / image.shape[1]))))
