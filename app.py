@@ -11,8 +11,6 @@ import settings
 
 # Paramètres et fonctions de settings.py et helper.py
 WEBCAM_PATH = 0
-# ... contenu de helper.py ...
-model = YOLO('yolov8n-pose.pt')
 
 # Configuration de la page Streamlit
 st.set_page_config(
@@ -56,6 +54,7 @@ st.markdown('Ouvrez votre webcam et cliquez sur le bouton Start pour commencer l
 
 def process(image):
     # image.flags.writeable = False
+    print("test")
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = model(image)
     result_keypoint = results.keypoints.xyn.cpu().numpy()[0]
@@ -76,15 +75,6 @@ class VideoProcessor:
 
 # Configuration de la webcam
 def play_webcam(conf, model):
-    """
-    Plays a webcam stream. Detects Objects in real-time using the YOLO object detection model.
-
-    Returns:
-        None
-
-    Raises:
-        None
-    """
     webrtc_streamer(
         key="example",
         video_processor_factory=VideoProcessor,
