@@ -22,6 +22,8 @@ class MyVideoTransformer(VideoTransformerBase):
     def process_image(self, image):
         input = np.asarray(Image.fromarray(image).resize((720, int(720 * image.shape[0] / image.shape[1]))))
         results = self.model.predict(input, conf=0.4)
+        result_keypoint = results[0].keypoints.xyn.cpu().numpy()[0]
+        print(result_keypoint)
         return results[0].plot()
 
 # Stream webcam with YOLO model
