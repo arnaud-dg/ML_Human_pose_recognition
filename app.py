@@ -44,7 +44,7 @@ class MyVideoTransformer(VideoTransformerBase):
         if self.model is not None:
             # Perform object detection using YOLO model
             results = self.model.predict(input, conf=self.conf)
-            result_keypoint = results.keypoints.xyn.cpu().numpy()[0]
+            # result_keypoint = results.keypoints.xyn.cpu().numpy()[0]
             print(result_keypoint)
 
             # Plot the detected objects on the video frame
