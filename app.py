@@ -34,7 +34,7 @@ with tab1:
     
     # Stream webcam with YOLO model
     col1.subheader("Webcam caster")
-    col1.webrtc_streamer(key="example", video_processor_factory=MyVideoTransformer, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}, media_stream_constraints={"video": True, "audio": False})
+    webrtc_streamer(key="example", video_processor_factory=MyVideoTransformer, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}, media_stream_constraints={"video": True, "audio": False})
 
     # Stream webcam with YOLO model
     col2.subheader("Alert")
