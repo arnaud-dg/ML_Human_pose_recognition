@@ -20,7 +20,6 @@ def get_cached_data():
 def update_data(new_data):
     df = get_cached_data()
     df = df.append(new_data, ignore_index=True)
-    print(df)
     return df
 
 class MyVideoTransformer(VideoTransformerBase):
