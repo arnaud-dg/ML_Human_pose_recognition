@@ -47,7 +47,6 @@ with tab1:
 with tab2:
     st.markdown('Rapport des résultats de prédiction :')
     # Afficher le dataframe
-    df = get_cached_data()
     if not df.empty:
         st.dataframe(df)
     else:
