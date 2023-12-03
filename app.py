@@ -11,6 +11,17 @@ st.title("Ergonomy Detection Bot")
 
 results = []
 
+# Définir une fonction de mise en cache pour stocker les résultats
+@st.cache(allow_output_mutation=True)
+def get_cached_data():
+    return pd.DataFrame(columns=['Resultat'])
+
+# Fonction pour mettre à jour le dataframe
+def update_data(new_data):
+    df = get_cached_data()
+    df = df.append(new_data, ignore_index=True)
+    return df
+
 class MyVideoTransformer(VideoTransformerBase):
     def __init__(self):
         self.model = YOLO('yolov8n-pose.pt')
@@ -24,7 +35,9 @@ class MyVideoTransformer(VideoTransformerBase):
         input = np.asarray(Image.fromarray(image).resize((720, int(720 * image.shape[0] / image.shape[1]))))
         results = self.model.predict(input, conf=0.4)
         result_keypoint = results[0].keypoints.xyn.cpu().numpy()[0]
-        print(result_keypoint)
+        # Mettre à jour le dataframe avec les nouveaux résultats
+        new_data = {'Resultat': result_keypoint}
+        update_data(new_data)
         return results[0].plot()
 
 tab1, tab2 = st.tabs(["Acquisition", "Report"])
@@ -35,4 +48,10 @@ with tab1:
     webrtc_streamer(key="example", video_processor_factory=MyVideoTransformer, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}, media_stream_constraints={"video": True, "audio": False})
 
 with tab2:
-    st.markdown('Sorry, you haven t acquired anything ! ')
+    st.markdown('Rapport des résultats de prédiction :')
+    # Afficher le dataframe
+    df = get_cached_data()
+    if not df.empty:
+        st.dataframe(df)
+    else:
+        st.markdown('Sorry, you haven\'t acquired anything !')
