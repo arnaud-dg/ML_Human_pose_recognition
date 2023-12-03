@@ -46,4 +46,4 @@ with tab1:
         col2.text('1 person')
 
 with tab2:
-    st.markdown('Sorry, you haven't acquired anything ! ')
+    st.markdown('Sorry, you haven t acquired anything ! ')
