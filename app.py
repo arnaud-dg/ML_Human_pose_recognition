@@ -14,9 +14,9 @@ results = []
 df = pd.DataFrame()
 
 # Fonction pour mettre à jour le dataframe
-def update_data(new_data):
-    df = df.append(new_data, ignore_index=True)
-    return df
+# def update_data(new_data):
+#     df = df.append(new_data, ignore_index=True)
+#     return df
 
 class MyVideoTransformer(VideoTransformerBase):
     def __init__(self):
@@ -33,8 +33,8 @@ class MyVideoTransformer(VideoTransformerBase):
         result_keypoint = results[0].keypoints.xyn.cpu().numpy()[0]
         print(result_keypoint)
         # Mettre à jour le dataframe avec les nouveaux résultats
-        # new_data = {'Resultat': result_keypoint}
-        # update_data(new_data)
+        new_data = {'Resultat': result_keypoint}
+        df = df.append(new_data, ignore_index=True)
         return results[0].plot()
 
 tab1, tab2 = st.tabs(["Acquisition", "Report"])
