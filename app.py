@@ -4,6 +4,7 @@ from ultralytics import YOLO
 import streamlit as st
 from PIL import Image
 import numpy as np
+import pandas as pd
 
 # Basic configuration and title for the Streamlit app
 st.set_page_config(page_title="Ergonomy Detection Bot", page_icon="🤖", layout="wide")
