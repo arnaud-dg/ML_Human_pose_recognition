@@ -11,14 +11,10 @@ st.set_page_config(page_title="Ergonomy Detection Bot", page_icon="🤖", layout
 st.title("Ergonomy Detection Bot")
 
 results = []
-
-@st.experimental_memo
-def get_cached_data():
-    return pd.DataFrame(columns=['Resultat'])
+df = pd.DataFrame()
 
 # Fonction pour mettre à jour le dataframe
 def update_data(new_data):
-    df = get_cached_data()
     df = df.append(new_data, ignore_index=True)
     return df
 
