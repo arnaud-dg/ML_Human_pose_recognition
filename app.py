@@ -36,11 +36,12 @@ class MyVideoTransformer(VideoTransformerBase):
         # Mettre à jour le dataframe avec les nouveaux résultats
         # new_data = {'Resultat': result_keypoint}
         # df = df.append(new_data, ignore_index=True)
-        return results[0].plot()
+        # return results[0].plot()
         keypoints = results[0].keypoints.xyn.cpu().numpy()[0]  # Assurez-vous que c'est le bon format
 
         # Dessiner les keypoints sur l'image
         for point in keypoints:
+            print(x, y)
             x, y = int(point[0]), int(point[1])  # Convertir en entiers pour les coordonnées de pixels
             cv2.circle(image, (x, y), 5, (0, 255, 0), -1)  # Dessiner un cercle vert pour chaque keypoint
         return image
