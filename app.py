@@ -12,8 +12,7 @@ st.title("Ergonomy Detection Bot")
 
 results = []
 
-# Définir une fonction de mise en cache pour stocker les résultats
-@st.cache(allow_output_mutation=True)
+@st.experimental_memo
 def get_cached_data():
     return pd.DataFrame(columns=['Resultat'])
 
@@ -21,6 +20,7 @@ def get_cached_data():
 def update_data(new_data):
     df = get_cached_data()
     df = df.append(new_data, ignore_index=True)
+    print(df)
     return df
 
 class MyVideoTransformer(VideoTransformerBase):
@@ -36,6 +36,7 @@ class MyVideoTransformer(VideoTransformerBase):
         input = np.asarray(Image.fromarray(image).resize((720, int(720 * image.shape[0] / image.shape[1]))))
         results = self.model.predict(input, conf=0.4)
         result_keypoint = results[0].keypoints.xyn.cpu().numpy()[0]
+        print(result_keypoint)
         # Mettre à jour le dataframe avec les nouveaux résultats
         new_data = {'Resultat': result_keypoint}
         update_data(new_data)
