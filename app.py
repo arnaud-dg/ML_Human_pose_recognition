@@ -1,62 +1,138 @@
-# Importation des packages
-from streamlit_webrtc import webrtc_streamer, VideoTransformerBase
-from ultralytics import YOLO
 import streamlit as st
-from PIL import Image
-import numpy as np
-import pandas as pd
+
+import mediapipe as mp
 import cv2
 
-# Basic configuration and title for the Streamlit app
-st.set_page_config(page_title="Ergonomy Detection Bot", page_icon="🤖", layout="wide")
-st.title("Ergonomy Detection Bot")
 
-results = []
-df = pd.DataFrame()
+import numpy as np
+import tempfile
+from PIL import Image
 
-# Fonction pour mettre à jour le dataframe
-# def update_data(new_data):
-#     df = df.append(new_data, ignore_index=True)
-#     return df
+#Lets try to integrate streamlit and mediapipe
 
-class MyVideoTransformer(VideoTransformerBase):
-    def __init__(self):
-        self.model = YOLO('yolov8n-pose.pt')
+mp_drawing = mp.solutions.drawing_utils
+mp_face_mesh = mp.solutions.face_mesh
 
-    def recv(self, frame):
-        image = frame.to_ndarray(format="bgr24")
-        processed_image = self.process_image(image)
-        st.image(processed_image, caption='Detected Video', channels="BGR", use_column_width=True)
+DEMO_VIDEO = 'demo.mp4'
+OUTM = 'output.mp4'
+DEMO_IMAGE = 'demo.jpg'
 
-    def process_image(self, image):
-        input = np.asarray(Image.fromarray(image).resize((720, int(720 * image.shape[0] / image.shape[1]))))
-        results = self.model.predict(input, conf=0.4)
-        # result_keypoint = results[0].keypoints.xyn.cpu().numpy()[0]
-        # print(result_keypoint)
-        # Mettre à jour le dataframe avec les nouveaux résultats
-        # new_data = {'Resultat': result_keypoint}
-        # df = df.append(new_data, ignore_index=True)
-        # return results[0].plot()
-        keypoints = results[0].keypoints.xyn.cpu().numpy()[0]  # Assurez-vous que c'est le bon format
+@st.cache()
+def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
+    # initialize the dimensions of the image to be resized and
+    # grab the image size
+    dim = None
+    (h, w) = image.shape[:2]
 
-        # Dessiner les keypoints sur l'image
-        for point in keypoints:
-            print(x, y)
-            x, y = int(point[0]), int(point[1])  # Convertir en entiers pour les coordonnées de pixels
-            cv2.circle(image, (x, y), 5, (0, 255, 0), -1)  # Dessiner un cercle vert pour chaque keypoint
+    # if both the width and height are None, then return the
+    # original image
+    if width is None and height is None:
         return image
 
-tab1, tab2 = st.tabs(["Acquisition", "Report"])
+    # check to see if the width is None
+    if width is None:
+        # calculate the ratio of the height and construct the
+        # dimensions
+        r = height / float(h)
+        dim = (int(w * r), height)
 
-with tab1:
-    st.markdown('Ouvrez votre webcam et cliquez sur le bouton Start pour commencer l\'acquisition.')
-    # Stream webcam with YOLO model
-    webrtc_streamer(key="example", video_processor_factory=MyVideoTransformer, rtc_configuration={"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}, media_stream_constraints={"video": True, "audio": False})
-
-with tab2:
-    st.markdown('Rapport des résultats de prédiction :')
-    # Afficher le dataframe
-    if not df.empty:
-        st.dataframe(df)
+    # otherwise, the height is None
     else:
-        st.markdown('Sorry, you haven\'t acquired anything !')
+        # calculate the ratio of the width and construct the
+        # dimensions
+        r = width / float(w)
+        dim = (width, int(h * r))
+
+    # resize the image
+    resized = cv2.resize(image, dim, interpolation=inter)
+
+    # return the resized image
+    return resized
+
+def main():
+
+    st.title('Face Mesh Application using MediaPipe')
+
+    st.markdown(
+        """
+        <style>
+        [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
+            width: 350px;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
+            width: 350px;
+            margin-left: -350px;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
+    st.sidebar.title('Face Mesh Application using MediaPipe')
+    st.sidebar.subheader('Parameters')
+
+    detection_confidence = st.sidebar.slider('Min Detection Confidence', min_value =0.0,max_value = 1.0,value = 0.5)
+    tracking_confidence = st.sidebar.slider('Min Tracking Confidence', min_value = 0.0,max_value = 1.0,value = 0.5)
+    #max faces
+    max_faces = st.sidebar.number_input('Maximum Number of Faces',value =1,min_value= 1)
+
+    st.markdown(' ## Output')
+    stframe = st.empty()
+    
+    video_file_buffer = st.sidebar.file_uploader("Upload a video", type=[ "mp4", "mov",'avi','asf', 'm4v' ])
+    tfflie = tempfile.NamedTemporaryFile(delete=False)
+
+    if not video_file_buffer:
+        vid = cv2.VideoCapture(DEMO_VIDEO)
+        tfflie.name = DEMO_VIDEO
+    
+    else:
+        tfflie.write(video_file_buffer.read())
+    vid = cv2.VideoCapture(tfflie.name)
+
+    width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    fps = int(vid.get(cv2.CAP_PROP_FPS))
+    #codec = cv2.VideoWriter_fourcc(*FLAGS.output_format)
+    codec = cv2.VideoWriter_fourcc('V','P','0','9')
+    out = cv2.VideoWriter('output1.webm', codec, fps, (width, height))
+
+    st.sidebar.text('Input Video')
+    st.sidebar.video(tfflie.name)
+
+    drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
+
+    with mp_face_mesh.FaceMesh(
+    min_detection_confidence=detection_confidence,
+    min_tracking_confidence=tracking_confidence , 
+    max_num_faces = max_faces) as face_mesh:
+
+        while vid.isOpened():
+            ret, frame = vid.read()
+            if not ret:
+                continue
+
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+            results = face_mesh.process(frame)
+            frame.flags.writeable = True
+            frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
+        
+            if results.multi_face_landmarks:
+                for face_landmarks in results.multi_face_landmarks:
+                    mp_drawing.draw_landmarks(
+                    image = frame,
+                    landmark_list=face_landmarks,
+                    connections=mp_face_mesh.FACE_CONNECTIONS,
+                    landmark_drawing_spec=drawing_spec,
+                    connection_drawing_spec=drawing_spec)
+
+
+            out.write(frame)    
+            frame = image_resize(image = frame, width = 640)
+            stframe.image(frame,channels = 'BGR',use_column_width=True)
+
+    st.text('Video is Processed')
+    vid.release()
+    out.release()
+
+if __name__ == '__main__':
+    main()# Importation des packages
