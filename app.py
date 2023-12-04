@@ -43,7 +43,7 @@ def process(image):
     #         mp_hands.HAND_CONNECTIONS,
     #         mp_drawing_styles.get_default_hand_landmarks_style(),
     #         mp_drawing_styles.get_default_hand_connections_style())
-    return cv2.flip(image, 1)
+    return cv2.imshow("Mediapipe feed", image) # cv2.flip(image, 1)
 
 RTC_CONFIGURATION = RTCConfiguration(
     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
@@ -52,6 +52,7 @@ RTC_CONFIGURATION = RTCConfiguration(
 class VideoProcessor:
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
+        print(img)
         img = process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
         
