@@ -2,11 +2,9 @@ import streamlit as st
 import mediapipe as mp
 import cv2
 import numpy as np
-import tempfile
 from PIL import Image
 
 #Lets try to integrate streamlit and mediapipe
-
 mp_drawing = mp.solutions.drawing_utils
 mp_face_mesh = mp.solutions.face_mesh
 
