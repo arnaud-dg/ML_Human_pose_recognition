@@ -1,4 +1,4 @@
-import cv2
+mpimport cv2
 import numpy as np
 import av
 import mediapipe as mp
@@ -40,10 +40,8 @@ class VideoProcessor:
         return av.VideoFrame.from_ndarray(img, format="bgr24")
         
 webrtc_ctx = webrtc_streamer(
-    key="WYH",
-    mode=WebRtcMode.SENDRECV,
+    key="example",
+    video_transformer_factory=VideoProcessor,
     rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
-    video_processor_factory=VideoProcessor,
-    #async_processing=True,
 )
