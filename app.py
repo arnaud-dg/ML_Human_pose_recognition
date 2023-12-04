@@ -1,9 +1,6 @@
 import streamlit as st
-
 import mediapipe as mp
 import cv2
-
-
 import numpy as np
 import tempfile
 from PIL import Image
@@ -52,7 +49,6 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 def main():
 
     st.title('Face Mesh Application using MediaPipe')
-
     st.markdown(
         """
         <style>
@@ -70,17 +66,16 @@ def main():
     st.sidebar.title('Face Mesh Application using MediaPipe')
     st.sidebar.subheader('Parameters')
 
+    # Settings
     detection_confidence = st.sidebar.slider('Min Detection Confidence', min_value =0.0,max_value = 1.0,value = 0.5)
     tracking_confidence = st.sidebar.slider('Min Tracking Confidence', min_value = 0.0,max_value = 1.0,value = 0.5)
-    #max faces
     max_faces = st.sidebar.number_input('Maximum Number of Faces',value =1,min_value= 1)
 
+    # Video input
     st.markdown(' ## Output')
     stframe = st.empty()
-    
     video_file_buffer = st.sidebar.file_uploader("Upload a video", type=[ "mp4", "mov",'avi','asf', 'm4v' ])
     tfflie = tempfile.NamedTemporaryFile(delete=False)
-
     if not video_file_buffer:
         vid = cv2.VideoCapture(DEMO_VIDEO)
         tfflie.name = DEMO_VIDEO
@@ -88,7 +83,6 @@ def main():
     else:
         tfflie.write(video_file_buffer.read())
     vid = cv2.VideoCapture(tfflie.name)
-
     width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fps = int(vid.get(cv2.CAP_PROP_FPS))
