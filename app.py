@@ -3,6 +3,7 @@ import mediapipe as mp
 import cv2
 import numpy as np
 from PIL import Image
+import tempfile
 import csv
 
 # Load mediapipe components
