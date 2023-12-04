@@ -41,7 +41,7 @@ class VideoProcessor:
         
 webrtc_ctx = webrtc_streamer(
     key="example",
-    video_transformer_factory=VideoProcessor,
+    video_processor_factory=VideoProcessor,
     rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
 )
