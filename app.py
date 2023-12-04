@@ -22,28 +22,29 @@ def process(image):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    print(results)
+    # print(results)
 
-    try:
-        landmarks = results.pose_landmarks.landmark
-    except:
-        pass
+    # try:
+    #     landmarks = results.pose_landmarks.landmark
+    # except:
+    #     pass
     
-    # Render detections
-    mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-                              mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
-                              mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
-                             ) # First landmarks drawing spec and then connection drawings specs
+    # # Render detections
+    # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
+    #                           mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
+    #                           mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+    #                          ) # First landmarks drawing spec and then connection drawings specs
     
-    # if results.multi_hand_landmarks:
-    #   for hand_landmarks in results.multi_hand_landmarks:
-    #     mp_drawing.draw_landmarks(
-    #         image,
-    #         hand_landmarks,
-    #         mp_hands.HAND_CONNECTIONS,
-    #         mp_drawing_styles.get_default_hand_landmarks_style(),
-    #         mp_drawing_styles.get_default_hand_connections_style())
-    return cv2.imshow("Mediapipe feed", image) # cv2.flip(image, 1)
+    if results.pose_landmarks.landmark:
+      for landmarks in results.pose_landmarks.landmark:
+        mp_drawing.draw_landmarks(
+            image,
+            results.pose_landmarks,
+            mp_pose.POSE_CONNECTIONS,
+            mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
+            mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+    )
+    return cv2.flip(image, 1)
 
 RTC_CONFIGURATION = RTCConfiguration(
     {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
@@ -52,7 +53,6 @@ RTC_CONFIGURATION = RTCConfiguration(
 class VideoProcessor:
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        print(img)
         img = process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
         
