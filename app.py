@@ -12,32 +12,18 @@ def process(image):
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = mp_pose.process(image)
-    # Draw the hand annotations on the image.
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    print(results)
-
-    # try:
-    #     landmarks = results.pose_landmarks.landmark
-    # except:
-    #     pass
-    
-    # # Render detections
-    # mp_drawing.draw_landmarks(image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS,
-    #                           mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
-    #                           mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
-    #                          ) # First landmarks drawing spec and then connection drawings specs
-    
-    if results.pose_landmarks.landmark:
-      for landmarks in results.pose_landmarks.landmark:
+    # Vérifier si des landmarks ont été détectés
+    if results.pose_landmarks:
         mp_drawing.draw_landmarks(
             image,
             results.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
-    )
+        )
     return cv2.flip(image, 1)
 
 RTC_CONFIGURATION = RTCConfiguration(
