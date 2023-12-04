@@ -17,6 +17,8 @@ def process(image):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     print(results.pose_landmarks)
+    if results.pose_landmarks == None:
+        print('lapin')
     
     # Vérifier si des landmarks ont été détectés
     if results.pose_landmarks:
