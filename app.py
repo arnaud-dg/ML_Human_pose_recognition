@@ -3,7 +3,6 @@ import mediapipe as mp
 import cv2
 import numpy as np
 from PIL import Image
-from facial_landmarks import FaceLandmarks
 import csv
 
 # Load mediapipe components
