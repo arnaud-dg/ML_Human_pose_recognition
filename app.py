@@ -3,24 +3,25 @@ import mediapipe as mp
 import cv2
 import numpy as np
 from PIL import Image
+from facial_landmarks import FaceLandmarks
+import csv
 
-#Lets try to integrate streamlit and mediapipe
+# Load mediapipe components
 mp_drawing = mp.solutions.drawing_utils
+mp_pose = mp.solutions.pose
 mp_face_mesh = mp.solutions.face_mesh
 
-DEMO_VIDEO = 'demo.mp4'
+DEMO_VIDEO = 'keith.mp4'
 OUTM = 'output.mp4'
-DEMO_IMAGE = 'demo.jpg'
+DEMO_IMAGE = 'rock.jpg'
 
 @st.cache()
 def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
-    # initialize the dimensions of the image to be resized and
-    # grab the image size
+    # initialize the dimensions of the image to be resized and grab the image size
     dim = None
     (h, w) = image.shape[:2]
 
-    # if both the width and height are None, then return the
-    # original image
+    # if both the width and height are None, then return the original image
     if width is None and height is None:
         return image
 
@@ -47,20 +48,7 @@ def image_resize(image, width=None, height=None, inter=cv2.INTER_AREA):
 def main():
 
     st.title('Face Mesh Application using MediaPipe')
-    st.markdown(
-        """
-        <style>
-        [data-testid="stSidebar"][aria-expanded="true"] > div:first-child {
-            width: 350px;
-        }
-        [data-testid="stSidebar"][aria-expanded="false"] > div:first-child {
-            width: 350px;
-            margin-left: -350px;
-        }
-        </style>
-        """,
-        unsafe_allow_html=True,
-    )
+    
     st.sidebar.title('Face Mesh Application using MediaPipe')
     st.sidebar.subheader('Parameters')
 
@@ -127,4 +115,4 @@ def main():
     out.release()
 
 if __name__ == '__main__':
-    main()# Importation des packages
+    main() # Importation des packages
