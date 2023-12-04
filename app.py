@@ -1,83 +1,49 @@
 import cv2
+import numpy as np
+import av
 import mediapipe as mp
-import tempfile
-import streamlit as st
+from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 
-#demo video 
-DEMO_VIDEO = 'keith.mp4'
-
-#mediapipe inbuilt solutions 
+mp_drawing = mp.solutions.drawing_utils
+mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
-mp_drawing = mp.solutions.drawing_utils
 
-def main():
+def process(image):
+    image.flags.writeable = False
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = mp_pose.process(image)
+    image.flags.writeable = True
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    #title 
-    st.title('Face Detection App')
-    #sidebar title
-    st.sidebar.title('Face Detection App')
-
-    st.sidebar.subheader('Parameters')
-    #creating a button for webcam
-    use_webcam = st.sidebar.button('Use Webcam')
-    #creating a slider for detection confidence 
-    detection_confidence = st.sidebar.slider('Min Detection Confidence', min_value =0.0,max_value = 1.0,value = 0.5)
+    print(results.pose_landmarks)
     
-    #model selection 
-    model_selection = st.sidebar.selectbox('Model Selection',options=[0,1,2])
-    st.markdown(' ## Output')
-    stframe = st.empty()
-    
-    #file uploader
-    video_file_buffer = st.sidebar.file_uploader("Upload a video", type=[ "mp4", "mov",'avi','asf', 'm4v' ])
+    # Vérifier si des landmarks ont été détectés
+    if results.pose_landmarks:
+        mp_drawing.draw_landmarks(
+            image,
+            results.pose_landmarks,
+            mp_pose.POSE_CONNECTIONS,
+            mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
+            mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+        )
+    return cv2.flip(image, 1)
 
-    #temporary file name 
-    tfflie = tempfile.NamedTemporaryFile(delete=False)
+RTC_CONFIGURATION = RTCConfiguration(
+    {"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]}
+)
 
-    if not video_file_buffer:
-        if use_webcam:
-            vid = cv2.VideoCapture(0)
-        else:
-            vid = cv2.VideoCapture(DEMO_VIDEO)
-            tfflie.name = DEMO_VIDEO
-    else:
-        tfflie.write(video_file_buffer.read())
-        vid = cv2.VideoCapture(tfflie.name)
-
-    #values 
-    width = int(vid.get(cv2.CAP_PROP_FRAME_WIDTH))
-    height = int(vid.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    fps = int(vid.get(cv2.CAP_PROP_FPS))
-    #codec = cv2.VideoWriter_fourcc(*FLAGS.output_format)
-    codec = cv2.VideoWriter_fourcc('V','P','0','9')
-    out = cv2.VideoWriter('output1.webm', codec, fps, (width, height))
-    
-    st.sidebar.text('Input Video')
-    st.sidebar.video(tfflie.name)
-
-    # drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
-    with mp_face_detection.FaceDetection(
-    model_selection=model_selection, min_detection_confidence=detection_confidence) as face_detection:
+class VideoProcessor:
+    def recv(self, frame):
+        img = frame.to_ndarray(format="bgr24")
+        img = process(img)
+        return av.VideoFrame.from_ndarray(img, format="bgr24")
         
-        while vid.isOpened():
-            ret, image = vid.read()
-            if not ret:
-                break
-            image.flags.writeable = False
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-            results = face_detection.process(image)
-            if results.detections:
-                for detection in results.detections:
-                    mp_drawing.draw_detection(image, detection)
-            stframe.image(image,use_column_width=True)
-
-        vid.release()
-        out.release()
-        cv2.destroyAllWindows()
-
-    st.success('Video is Processed')
-    st.stop()
-
-if __name__ == '__main__':
-    main()
+webrtc_ctx = webrtc_streamer(
+    key="WYH",
+    mode=WebRtcMode.SENDRECV,
+    rtc_configuration=RTC_CONFIGURATION,
+    media_stream_constraints={"video": True, "audio": False},
+    video_processor_factory=VideoProcessor,
+    async_processing=True,
+)
