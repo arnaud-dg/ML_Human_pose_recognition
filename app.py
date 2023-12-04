@@ -12,10 +12,11 @@ def process(image):
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = mp_pose.process(image)
-    # print(results[0])
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+    print(results.pose_landmarks)
+    
     # Vérifier si des landmarks ont été détectés
     if results.pose_landmarks:
         mp_drawing.draw_landmarks(
