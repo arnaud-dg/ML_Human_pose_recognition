@@ -53,8 +53,8 @@ class VideoProcessor():
 st.title("Ergonomy Smart Assistant")
 
 video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
-min_detection_confidence = st.sidebar.slider('Detection Threshold', 0, 1, 0.5)
-min_tracking_confidence = st.sidebar.slider('Tracking Threshold', 0, 1, 0.5)
+#min_detection_confidence = st.sidebar.slider('Detection Threshold', 0, 1, 0.5)
+#min_tracking_confidence = st.sidebar.slider('Tracking Threshold', 0, 1, 0.5)
 blurring_mode = st.sidebar.radio("Would you like to activate the blurring mode", ["Yes", "No"])
 
 webrtc_ctx = webrtc_streamer(
