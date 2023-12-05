@@ -10,7 +10,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 
-st.set_page_config(layout="wide").
+st.set_page_config(layout="wide")
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
 
