@@ -65,7 +65,7 @@ with tab1:
     col1, col2 = st.columns([7, 3])
     
     col1.subheader("Webcam stream")
-    webrtc_ctx = webrtc_streamer(
+    col1.webrtc_ctx = webrtc_streamer(
         key="example",
         mode=WebRtcMode.SENDRECV,
         video_processor_factory=VideoProcessor,
