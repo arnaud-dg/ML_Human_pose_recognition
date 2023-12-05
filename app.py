@@ -13,7 +13,7 @@ mp_pose = mp.solutions.pose
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
 
-model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
+model = mp_pose.Pose(min_detection_confidence, min_tracking_confidence)
 
 def process(image):
     image.flags.writeable = False
@@ -53,15 +53,22 @@ class VideoProcessor():
 st.title("Ergonomy Smart Assistant")
 
 video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
-#min_detection_confidence = st.sidebar.slider('Detection Threshold', 0, 1, 0.5)
-#min_tracking_confidence = st.sidebar.slider('Tracking Threshold', 0, 1, 0.5)
+min_detection_confidence = st.sidebar.slider("Detection Threshold :", min_value=0, max_value=1, value=0.5, step=0.1)
+min_tracking_confidence = st.sidebar.slider("Tracking Threshold :", min_value=0, max_value=1, value=0.5, step=0.1)
 blurring_mode = st.sidebar.radio("Would you like to activate the blurring mode", ["Yes", "No"])
 
-webrtc_ctx = webrtc_streamer(
-    key="example",
-    mode=WebRtcMode.SENDRECV,
-    video_processor_factory=VideoProcessor,
-    rtc_configuration=RTC_CONFIGURATION,
-    media_stream_constraints={"video": True, "audio": False},
-    # async_processing=True,
-)
+tab1, tab2  = st.tabs(["Acquisition", "Report"])
+
+with tab1:
+    st.header("Acquisition")
+    webrtc_ctx = webrtc_streamer(
+        key="example",
+        mode=WebRtcMode.SENDRECV,
+        video_processor_factory=VideoProcessor,
+        rtc_configuration=RTC_CONFIGURATION,
+        media_stream_constraints={"video": True, "audio": False},
+        # async_processing=True,
+    )
+
+with tab2:
+    st.write("No report yet")
