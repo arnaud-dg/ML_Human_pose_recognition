@@ -77,5 +77,5 @@ webrtc_ctx = webrtc_streamer(
     video_processor_factory=VideoProcessor,
     rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
-    async_processing=True,
+    # async_processing=True,
 )
