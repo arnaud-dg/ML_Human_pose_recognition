@@ -10,31 +10,10 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 
-model = mp_pose.Pose()
+min_detection_confidence=0.5 
+min_tracking_confidence=0.5
 
-# def video_frame_callback(frame: av.VideoFrame) -> av.VideoFrame:
-#     image = frame.to_ndarray(format="bgr24")
-#     # disable landmarks
-#     # image.flags.writeable = False
-#     # image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-#     # Run inference
-#     results = mp_pose.process(image)
-#     # enable landmarks landmarks
-#     # image.flags.writeable = True
-#     # image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-#     print(results.pose_landmarks)
-    
-#     # Vérifier si des landmarks ont été détectés
-#     if results.pose_landmarks:
-#         mp_drawing.draw_landmarks(
-#             image,
-#             results.pose_landmarks,
-#             mp_pose.POSE_CONNECTIONS,
-#             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2),
-#             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
-#         )
-#     return av.VideoFrame.from_ndarray(image, format="bgr24")
+model = mp_pose.Pose(min_detection_confidence, min_tracking_confidence)
 
 def process(image):
     image.flags.writeable = False
@@ -69,11 +48,18 @@ class VideoProcessor():
         # img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
         img = process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
-        
+
+# Page
+st.title("Ergonomy Smart Assistant")
+
+video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
+min_detection_confidence = st.sidebar.slider('Detection Threshold', 0, 1, 0.5)
+min_tracking_confidence = st.sidebar.slider('Tracking Threshold', 0, 1, 0.5)
+blurring_mode = st.sidebar.radio("Would you like to activate the blurring mode", ["Yes", "No"])
+
 webrtc_ctx = webrtc_streamer(
     key="example",
     mode=WebRtcMode.SENDRECV,
-    # video_frame_callback=video_frame_callback,
     video_processor_factory=VideoProcessor,
     rtc_configuration=RTC_CONFIGURATION,
     media_stream_constraints={"video": True, "audio": False},
