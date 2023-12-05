@@ -62,10 +62,7 @@ tab1, tab2  = st.tabs(["Acquisition", "Report"])
 
 with tab1:
     st.header("Acquisition")
-    col1, col2 = st.columns([7, 3])
-    
-    col1.subheader("Webcam stream")
-    col1.webrtc_ctx = webrtc_streamer(
+    webrtc_ctx = webrtc_streamer(
         key="example",
         mode=WebRtcMode.SENDRECV,
         video_processor_factory=VideoProcessor,
@@ -73,8 +70,6 @@ with tab1:
         media_stream_constraints={"video": True, "audio": False},
         # async_processing=True,
     )
-
-    col2.subheader("Alerts")
-    col2.write("Resultats")
+    
 with tab2:
     st.write("No report yet")
