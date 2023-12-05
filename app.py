@@ -13,7 +13,7 @@ mp_pose = mp.solutions.pose
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
 
-model = mp_pose.Pose(min_detection_confidence, min_tracking_confidence)
+model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
 def process(image):
     image.flags.writeable = False
