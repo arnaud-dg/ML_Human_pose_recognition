@@ -10,6 +10,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 
+st.set_page_config(layout="wide").
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
 
@@ -61,6 +62,9 @@ tab1, tab2  = st.tabs(["Acquisition", "Report"])
 
 with tab1:
     st.header("Acquisition")
+    col1, col2 = st.columns([7, 3])
+    
+    col1.subheader("Webcam stream")
     webrtc_ctx = webrtc_streamer(
         key="example",
         mode=WebRtcMode.SENDRECV,
@@ -70,5 +74,7 @@ with tab1:
         # async_processing=True,
     )
 
+    col2.subheader("Alerts")
+    col2.write("Resultats")
 with tab2:
     st.write("No report yet")
