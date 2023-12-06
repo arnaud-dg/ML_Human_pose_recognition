@@ -36,6 +36,8 @@ def bluring_face(frame):
         frame_copy = cv2.blur(frame_copy, (27, 27))
         face_extracted = cv2.bitwise_and(frame_copy, frame_copy, mask=mask)
 
+        print(face_extracted)
+
         # Extract background
         background_mask = cv2.bitwise_not(mask)
         background = cv2.bitwise_and(frame, frame, mask=background_mask)
@@ -53,6 +55,9 @@ def process(image):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+    if blurring_mode == "Yes":
+        image = bluring_face(image) 
+
     # Vérifier si des landmarks ont été détectés
     if results.pose_landmarks:
         mp_drawing.draw_landmarks(
@@ -62,9 +67,6 @@ def process(image):
             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
         )
-
-    if blurring_mode == "Yes":
-        image = bluring_face(image) 
 
     return cv2.flip(image, 1)
 
