@@ -18,8 +18,29 @@ min_tracking_confidence=0.5
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
+def calculate_angle(a,b,c):
+    a = np.array(a) # First
+    b = np.array(b) # Mid
+    c = np.array(c) # End
+    
+    radians = np.arctan2(c[1]-b[1], c[0]-b[0]) - np.arctan2(a[1]-b[1], a[0]-b[0])
+    angle = np.abs(radians*180.0/np.pi)
+    
+    if angle > 180.0:
+        angle = 360.0 - angle
+        
+    return angle
+
+def distance(a,b):
+    a = np.array(a) # First
+    b = np.array(b) # Mid
+    # Calculate euclidian distance between a[0], a[1] and b[0], b[1]
+    distance = np.sqrt((b[0] - a[0])**2 + (b[1] - a[1])**2 )
+  
+    return distance
+
 def bluring_face(frame):
-    frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5)
+    # frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5)
     frame_copy = frame.copy()
     height, width, _ = frame.shape
 
@@ -36,8 +57,6 @@ def bluring_face(frame):
         frame_copy = cv2.blur(frame_copy, (27, 27))
         face_extracted = cv2.bitwise_and(frame_copy, frame_copy, mask=mask)
 
-        print(face_extracted)
-
         # Extract background
         background_mask = cv2.bitwise_not(mask)
         background = cv2.bitwise_and(frame, frame, mask=background_mask)
@@ -47,6 +66,41 @@ def bluring_face(frame):
         return result
     else:
         return frame  # Retourne l'image originale si aucun visage n'est détecté
+
+def angle_extraction(landmarks):
+    # Left arm
+    shoulder_l = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+    elbow_l = [landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ELBOW.value].y]
+    hip_l = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+    angle_arm_l = calculate_angle(shoulder_l, elbow_l, hip_l)
+    angle_arm_l = np.round(angle_arm_l,1)
+    # Right arm
+    shoulder_r = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+    elbow_r = [landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_ELBOW.value].y]
+    hip_r = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+    angle_arm_r = calculate_angle(shoulder_r, elbow_r, hip_r)
+    angle_arm_r = np.round(angle_arm_r,1)
+    # Left leg
+    ankle_l = [landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_ANKLE.value].y]
+    knee_l = [landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.LEFT_KNEE.value].y]
+    hip_l = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+    angle_leg_l = calculate_angle(ankle_l, knee_l, hip_l)
+    angle_leg_l = np.round(angle_leg_l,1)
+    # Right leg
+    ankle_r = [landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_ANKLE.value].y]
+    knee_r = [landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_KNEE.value].y]
+    hip_r = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+    angle_leg_r = calculate_angle(ankle_r, knee_r, hip_r)
+    angle_leg_r = np.round(angle_leg_r,1)
+    # Ratio back
+    soulder_l = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+    hip_l = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
+    soulder_r = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+    hip_r = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
+    ratio = abs(distance(shoulder_l, shoulder_r)) / abs(distance(hip_l, hip_r))
+
+    list_angle = [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, ratio]
+    return list_angle
 
 def process(image):
     image.flags.writeable = False
@@ -67,6 +121,10 @@ def process(image):
             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
         )
+
+    landmarks = results.pose_landmarks.landmark
+    list_angle = angle_extraction(landmarks)
+    print(list_angle)
 
     return cv2.flip(image, 1)
 
