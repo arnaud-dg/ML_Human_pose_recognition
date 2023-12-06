@@ -23,8 +23,7 @@ min_tracking_confidence=0.5
 columns = ['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip']
 df = pd.DataFrame(columns=columns)
 
-# Replace 'your-username/repo-name' with your GitHub username and repository name
-video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition')
+
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
@@ -160,6 +159,9 @@ class VideoProcessor():
 
 # Page
 st.title("Ergonomy Smart Assistant")
+
+# Replace 'your-username/repo-name' with your GitHub username and repository name
+video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition')
 
 video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
 min_detection_confidence = st.sidebar.slider("Detection Threshold :", 0.0, 1.0, 0.5, 0.1)
