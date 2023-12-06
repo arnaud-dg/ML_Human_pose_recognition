@@ -183,11 +183,12 @@ with tab1:
         )
     else:
         # Dropdown to select the video
-        selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
+        # selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
+        uploaded_video = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
 
-        if selected_video is not None:
+        if uploaded_video is not None:
             # Lire la vidéo
-            video_cap = cv2.VideoCapture(selected_video.name)
+            video_cap = cv2.VideoCapture(uploaded_video.name)
 
             # Lecture frame par frame
             stframe = st.empty()
