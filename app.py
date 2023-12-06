@@ -19,6 +19,10 @@ min_tracking_confidence=0.5
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
 def bluring_face(frame):
+    frame = cv.resize(frame, None, fx = 0.5, fy = 0.5)
+    frame_copy = frame.copy()
+    height, width, _ = frame.shape
+
     # 1 Face landmark detection
     landmarks = fl.get_facial_landmarks(frame)
     convexhull = cv.convexHull(landmarks)
@@ -39,6 +43,8 @@ def bluring_face(frame):
 
     # Final result
     result = cv.add(background, face_extracted)
+
+    print(result)
 
     cv.imshow('Result', result)
     cv.imshow('Frame', frame)
