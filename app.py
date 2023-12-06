@@ -185,7 +185,7 @@ with tab1:
         # Dropdown to select the video
         selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
 
-        if uploaded_video is not None:
+        if selected_video is not None:
             # Lire la vidéo
             video_cap = cv2.VideoCapture(selected_video.name)
 
