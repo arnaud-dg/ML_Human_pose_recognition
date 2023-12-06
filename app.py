@@ -64,8 +64,7 @@ def process(image):
         )
 
     if blurring_mode == "Yes":
-    image = bluring_face(image) 
-
+        image = bluring_face(image) 
 
     return cv2.flip(image, 1)
 
