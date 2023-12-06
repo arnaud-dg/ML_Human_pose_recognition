@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-import pandas
+import pandas as pd
 import av
 import mediapipe as mp
 import streamlit as st
