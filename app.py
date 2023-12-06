@@ -212,4 +212,4 @@ with tab1:
 with tab2:
     st.write("No report yet")
     st.dataframe(df)    
-    st.write(shape(df))
+    st.write(df.shape)
