@@ -135,8 +135,8 @@ def process(image):
             image,
             results.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
-            mp_drawing.DrawingSpec(color=(0,128,0), thickness=2, circle_radius=2), #2,138,15
-            mp_drawing.DrawingSpec(color=(171,71,0), thickness=2, circle_radius=2)
+            mp_drawing.DrawingSpec(color=(171,71,0), thickness=2, circle_radius=2), #2,138,15
+            mp_drawing.DrawingSpec(color=(0,128,0), thickness=2, circle_radius=2)
         )
 
     landmarks = results.pose_landmarks.landmark
