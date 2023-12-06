@@ -83,8 +83,8 @@ class VideoProcessor():
 st.title("Ergonomy Smart Assistant")
 
 video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
-# min_detection_confidence = st.sidebar.slider("Detection Threshold :", min_value=0, max_value=1, value=0.5, step=0.1)
-# min_tracking_confidence = st.sidebar.slider("Tracking Threshold :", min_value=0, max_value=1, value=0.5, step=0.1)
+min_detection_confidence = st.sidebar.slider("Detection Threshold :", 0.0, 1.0, 0.5, 0.1)
+min_tracking_confidence = st.sidebar.slider("Tracking Threshold :", 0.0, 1.0, 0.5, 0.1)
 blurring_mode = st.sidebar.radio("Would you like to activate the blurring mode", ["Yes", "No"], index=1)
 
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
