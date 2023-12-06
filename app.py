@@ -7,6 +7,7 @@ import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 from facial_landmarks import FaceLandmarks
 from datetime import datetime
+import requests
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -22,8 +23,17 @@ min_tracking_confidence=0.5
 columns = ['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip']
 df = pd.DataFrame(columns=columns)
 
+# Replace 'your-username/repo-name' with your GitHub username and repository name
+video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition')
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
+
+# Function to get the raw URL of the video file from GitHub
+def get_video_url(github_path):
+    content_url = f"https://api.github.com/repos/{github_path}/contents/"
+    repo_content = requests.get(content_url).json()
+    video_urls = {item['name']: item['download_url'] for item in repo_content if item['name'].endswith('.mp4')}
+    return video_urls
 
 def calculate_angle(a,b,c):
     a = np.array(a) # First
@@ -159,15 +169,23 @@ blurring_mode = st.sidebar.radio("Would you like to activate the blurring mode",
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
 
 with tab1:
-    st.header("Acquisition")
-    webrtc_ctx = webrtc_streamer(
-        key="example",
-        mode=WebRtcMode.SENDRECV,
-        video_processor_factory=VideoProcessor,
-        rtc_configuration=RTC_CONFIGURATION,
-        media_stream_constraints={"video": True, "audio": False},
-        # async_processing=True,
-    )
+    if video_source == "Webcam":
+        st.header("Acquisition")
+        webrtc_ctx = webrtc_streamer(
+            key="example",
+            mode=WebRtcMode.SENDRECV,
+            video_processor_factory=VideoProcessor,
+            rtc_configuration=RTC_CONFIGURATION,
+            media_stream_constraints={"video": True, "audio": False},
+            # async_processing=True,
+        )
+    else:
+        # Dropdown to select the video
+        selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
+
+        # Display the selected video
+        if selected_video:
+            st.video(video_urls[selected_video])
     
 with tab2:
     st.write("No report yet")
