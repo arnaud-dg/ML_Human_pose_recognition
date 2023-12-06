@@ -186,22 +186,22 @@ with tab1:
         selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
 
         if uploaded_video is not None:
-        # Lire la vidéo
-        video_cap = cv2.VideoCapture(selected_video.name)
+            # Lire la vidéo
+            video_cap = cv2.VideoCapture(selected_video.name)
 
-        # Lecture frame par frame
-        stframe = st.empty()
-        while video_cap.isOpened():
-            ret, frame = video_cap.read()
-            if not ret:
-                break
+            # Lecture frame par frame
+            stframe = st.empty()
+            while video_cap.isOpened():
+                ret, frame = video_cap.read()
+                if not ret:
+                    break
 
-                img = frame.to_ndarray(format="bgr24")
-                # print(img)
-                img = process(img)
+                    img = frame.to_ndarray(format="bgr24")
+                    # print(img)
+                    img = process(img)
 
-                # Afficher la frame traitée
-                stframe.image(img, channels="BGR", use_column_width=True)
+                    # Afficher la frame traitée
+                    stframe.image(img, channels="BGR", use_column_width=True)
     
 with tab2:
     st.write("No report yet")
