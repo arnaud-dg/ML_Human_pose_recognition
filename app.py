@@ -4,11 +4,13 @@ import av
 import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
+from facial_landmarks import FaceLandmarks
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
+fl = FaceLandmarks()
 
 st.set_page_config(layout="wide")
 min_detection_confidence=0.5 
@@ -16,16 +18,39 @@ min_tracking_confidence=0.5
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
+def bluring_face(frame):
+    # 1 Face landmark detection
+    landmarks = fl.get_facial_landmarks(frame)
+    convexhull = cv.convexHull(landmarks)
+
+    # 2 Face blurring
+    mask = np.zeros((height, width), np.uint8)
+    cv.polylines(mask ,[convexhull], True, 255, 3)
+    cv.fillConvexPoly(mask, convexhull, 255)
+
+    # Extract the Face
+    frame_copy = cv.blur(frame_copy, (27, 27))  
+    face_extracted = cv.bitwise_and(frame_copy, frame_copy, mask = mask)
+    # blureed_frame = cv.GaussianBlur(face_extracted,(27, 27), 0)
+
+    # Extract background
+    background_mask = cv.bitwise_not(mask)
+    background = cv.bitwise_and(frame, frame, mask= background_mask)
+
+    # Final result
+    result = cv.add(background, face_extracted)
+
+    cv.imshow('Result', result)
+    cv.imshow('Frame', frame)
+
+    return cv2.flip(frame, 1)
+
 def process(image):
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = model.process(image)
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
-    print(results.pose_landmarks)
-    if results.pose_landmarks == None:
-        print('lapin')
     
     # Vérifier si des landmarks ont été détectés
     if results.pose_landmarks:
@@ -36,6 +61,10 @@ def process(image):
             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
         )
+
+    if blurring_mode == "Yes":
+        image = bluring_face(image) 
+
     return cv2.flip(image, 1)
 
 RTC_CONFIGURATION = RTCConfiguration(
@@ -46,7 +75,6 @@ class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
         print(img)
-        # img = cv2.cvtColor(cv2.Canny(img, 100, 200), cv2.COLOR_GRAY2BGR)
         img = process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
