@@ -1,10 +1,12 @@
 import cv2
 import numpy as np
+import pandas
 import av
 import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 from facial_landmarks import FaceLandmarks
+from datetime import datetime
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -15,6 +17,10 @@ fl = FaceLandmarks()
 st.set_page_config(layout="wide")
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
+
+# Création d'un DataFrame vide avec les colonnes spécifiées
+df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
@@ -97,9 +103,10 @@ def angle_extraction(landmarks):
     hip_l = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
     soulder_r = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
     hip_r = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
-    ratio = abs(distance(shoulder_l, shoulder_r)) / abs(distance(hip_l, hip_r))
+    distance_shoulder = distance(shoulder_l, shoulder_r)
+    distance_hip = distance(hip_l, hip_r)
 
-    list_angle = [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, ratio]
+    list_angle = [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, distance_shoulder, distance_hip]
     return list_angle
 
 def process(image):
@@ -124,7 +131,8 @@ def process(image):
 
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks)
-    print(list_angle)
+    current_time = datetime.now()
+    df.loc[current_time] = list_angle
 
     return cv2.flip(image, 1)
 
@@ -162,3 +170,4 @@ with tab1:
     
 with tab2:
     st.write("No report yet")
+    st.dataframe(df)    
