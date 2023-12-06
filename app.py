@@ -37,15 +37,14 @@ def bluring_face(frame):
     face_extracted = cv.bitwise_and(frame_copy, frame_copy, mask = mask)
     blureed_frame = cv.GaussianBlur(face_extracted,(27, 27), 0)
 
+    print(blurred_frame)
+
     # Extract background
     background_mask = cv.bitwise_not(mask)
     background = cv.bitwise_and(frame, frame, mask= background_mask)
 
     # Final result
     result = cv.add(background, blureed_frame)
-
-    # cv.imshow('Result', result)
-    # cv.imshow('Frame', frame)
 
     return result
 
