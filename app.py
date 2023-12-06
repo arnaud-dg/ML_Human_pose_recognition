@@ -36,8 +36,6 @@ def bluring_face(frame):
         frame_copy = cv2.blur(frame_copy, (27, 27))
         face_extracted = cv2.bitwise_and(frame_copy, frame_copy, mask=mask)
 
-        print(face_extracted)
-
         # Extract background
         background_mask = cv2.bitwise_not(mask)
         background = cv2.bitwise_and(frame, frame, mask=background_mask)
