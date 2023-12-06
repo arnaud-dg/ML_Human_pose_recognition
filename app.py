@@ -19,7 +19,8 @@ min_detection_confidence=0.5
 min_tracking_confidence=0.5
 
 # Création d'un DataFrame vide avec les colonnes spécifiées
-df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+columns = ['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip']
+df = pd.DataFrame(columns=columns)
 
 
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
