@@ -19,34 +19,32 @@ min_tracking_confidence=0.5
 model = mp_pose.Pose() #(min_detection_confidence, min_tracking_confidence)
 
 def bluring_face(frame):
-    frame = cv.resize(frame, None, fx = 0.5, fy = 0.5)
+    frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5)
     frame_copy = frame.copy()
     height, width, _ = frame.shape
 
     # 1 Face landmark detection
     landmarks = fl.get_facial_landmarks(frame)
-    convexhull = cv.convexHull(landmarks)
+    if landmarks is not None:
+        convexhull = cv2.convexHull(landmarks)
 
-    # 2 Face blurring
-    mask = np.zeros((height, width), np.uint8)
-    cv.polylines(mask ,[convexhull], True, 255, 3)
-    cv.fillConvexPoly(mask, convexhull, 255)
+        # 2 Face blurring
+        mask = np.zeros((height, width), np.uint8)
+        cv2.polylines(mask, [convexhull], True, 255, 3)
+        cv2.fillConvexPoly(mask, convexhull, 255)
 
-    # Extract the Face
-    frame_copy = cv.blur(frame_copy, (27, 27))  
-    face_extracted = cv.bitwise_and(frame_copy, frame_copy, mask = mask)
-    blureed_frame = cv.GaussianBlur(face_extracted,(27, 27), 0)
+        frame_copy = cv2.blur(frame_copy, (27, 27))
+        face_extracted = cv2.bitwise_and(frame_copy, frame_copy, mask=mask)
 
-    print(blurred_frame)
+        # Extract background
+        background_mask = cv2.bitwise_not(mask)
+        background = cv2.bitwise_and(frame, frame, mask=background_mask)
 
-    # Extract background
-    background_mask = cv.bitwise_not(mask)
-    background = cv.bitwise_and(frame, frame, mask= background_mask)
-
-    # Final result
-    result = cv.add(background, blureed_frame)
-
-    return result
+        # Final result
+        result = cv2.add(background, face_extracted)
+        return result
+    else:
+        return frame  # Retourne l'image originale si aucun visage n'est détecté
 
 def process(image):
     image.flags.writeable = False
