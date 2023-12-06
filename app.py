@@ -161,7 +161,7 @@ class VideoProcessor():
 st.title("Ergonomy Smart Assistant")
 
 # Replace 'your-username/repo-name' with your GitHub username and repository name
-video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition')
+video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition/contents')
 
 video_source = st.sidebar.radio("What is your video source", ["Webcam", "Video"])
 min_detection_confidence = st.sidebar.slider("Detection Threshold :", 0.0, 1.0, 0.5, 0.1)
