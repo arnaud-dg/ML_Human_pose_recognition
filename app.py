@@ -35,9 +35,9 @@ def distance(a,b):
     a = np.array(a) # First
     b = np.array(b) # Mid
     # Calculate euclidian distance between a[0], a[1] and b[0], b[1]
-    distance = np.sqrt((b[0] - a[0])**2 + (b[1] - a[1])**2 )
+    distance_ab = np.sqrt((b[0] - a[0])**2 + (b[1] - a[1])**2 )
   
-    return distance
+    return distance_ab
 
 def bluring_face(frame):
     # frame = cv2.resize(frame, None, fx = 0.5, fy = 0.5)
@@ -122,9 +122,9 @@ def process(image):
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
         )
 
-    landmarks = results.pose_landmarks.landmark
-    list_angle = angle_extraction(landmarks)
-    print(list_angle)
+    # landmarks = results.pose_landmarks.landmark
+    # list_angle = angle_extraction(landmarks)
+    # print(list_angle)
 
     return cv2.flip(image, 1)
 
