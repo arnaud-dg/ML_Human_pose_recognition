@@ -122,9 +122,9 @@ def process(image):
             mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
         )
 
-    # landmarks = results.pose_landmarks.landmark
-    # list_angle = angle_extraction(landmarks)
-    # print(list_angle)
+    landmarks = results.pose_landmarks.landmark
+    list_angle = angle_extraction(landmarks)
+    print(list_angle)
 
     return cv2.flip(image, 1)
 
@@ -135,7 +135,7 @@ RTC_CONFIGURATION = RTCConfiguration(
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        print(img)
+        # print(img)
         img = process(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
 
