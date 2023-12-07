@@ -18,7 +18,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
-model = mp_pose.Pose(min_detection_confidence, min_tracking_confidence)
+model = mp_pose.Pose() #min_detection_confidence, min_tracking_confidence)
 fl = FaceLandmarks()
 # WebRTC configuration
 RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
@@ -102,3 +102,15 @@ with tab2:
     st.write("No report yet")
     st.dataframe(df)    
     st.write(df.shape)
+
+# # Render curl counter
+# # Setup status box
+# cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
+
+# # Rep data
+# cv2.putText(image, 'REPS', (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+# cv2.putText(image, str(counter), (10,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+
+# # Stage data
+# cv2.putText(image, 'STAGE', (65,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+# cv2.putText(image, stage, (60,60), cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
