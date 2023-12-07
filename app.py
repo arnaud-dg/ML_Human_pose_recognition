@@ -201,7 +201,7 @@ with tab1:
         
 with tab2:
     st.write("No report yet")
-    df_container = st.dataframe(df)  # Créer un conteneur vide pour le DataFrame  
+    df_container = st.empty()  # Créer un conteneur vide pour le DataFrame  
 
 # À l'extérieur des onglets, mettez à jour le conteneur avec le DataFrame actuel
 # df_container.dataframe(st.session_state.df)
