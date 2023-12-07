@@ -153,7 +153,7 @@ def process_hpr(image):
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img = classes_functions.process_hpr(img)
+        img = process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
