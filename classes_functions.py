@@ -14,8 +14,6 @@ from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 ##########################
 #         Classes        #
 ##########################
-
-
 class FaceLandmarks:
     def __init__(self):
         mp_face_mesh = mp.solutions.face_mesh
@@ -148,6 +146,7 @@ def process(image):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
+    print(results)
     if blurring_mode == "Yes":
         image = bluring_face(image) 
 
