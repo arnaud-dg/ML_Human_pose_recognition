@@ -146,7 +146,6 @@ def process(image):
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    print(results)
     if blurring_mode == "Yes":
         image = bluring_face(image) 
 

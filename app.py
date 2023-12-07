@@ -6,7 +6,7 @@ import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 import classes_functions
-from classes_functions import FaceLandmarks
+# from classes_functions import FaceLandmarks
 from datetime import datetime
 import requests
 
@@ -19,7 +19,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 model = mp_pose.Pose() #min_detection_confidence, min_tracking_confidence)
-fl = FaceLandmarks()
+fl = classes_functions.FaceLandmarks()
 # WebRTC configuration
 RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
 # Dataframe
