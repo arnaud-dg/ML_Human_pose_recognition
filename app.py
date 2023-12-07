@@ -142,6 +142,7 @@ def process_hpr(image):
 
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks)
+    print(list_angle)
     current_time = datetime.now()
     df.loc[current_time] = list_angle
     print(df.shape)
