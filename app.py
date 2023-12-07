@@ -144,6 +144,7 @@ def process_hpr(image):
         )
 
     landmarks = results.pose_landmarks.landmark
+    print(landmarks)
     list_angle = angle_extraction(landmarks)
     current_time = datetime.now()
     st.session_state.df.loc[current_time] = list_angle
@@ -200,10 +201,10 @@ with tab1:
         
 with tab2:
     st.write("No report yet")
-    df_container = st.empty()  # Créer un conteneur vide pour le DataFrame  
+    df_container = st.dataframe(df)  # Créer un conteneur vide pour le DataFrame  
 
 # À l'extérieur des onglets, mettez à jour le conteneur avec le DataFrame actuel
-df_container.dataframe(st.session_state.df)
+# df_container.dataframe(st.session_state.df)
 
 # # Render curl counter
 # # Setup status box
