@@ -167,7 +167,7 @@ def process(image):
     df.loc[current_time] = list_angle
 
     return cv2.flip(image, 1)
-
+ok
 # Render curl counter
 # Setup status box
 # cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
