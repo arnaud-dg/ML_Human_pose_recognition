@@ -143,6 +143,7 @@ def process(image):
     list_angle = angle_extraction(landmarks)
     current_time = datetime.now()
     df.loc[current_time] = list_angle
+    print(df[-1,:])
 
     return cv2.flip(image, 1)
 
