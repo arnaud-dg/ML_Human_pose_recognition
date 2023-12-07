@@ -5,7 +5,7 @@ import av
 import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
-import classes_functions
+import classes_functions as cf
 from datetime import datetime
 import requests
 
@@ -18,7 +18,7 @@ mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 model = mp_pose.Pose() #min_detection_confidence, min_tracking_confidence)
-fl = classes_functions.FaceLandmarks()
+fl = cf.FaceLandmarks()
 # WebRTC configuration
 RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
 # Dataframe
@@ -49,7 +49,7 @@ min_tracking_confidence = st.sidebar.slider("Tracking Threshold :", 0.0, 1.0, 0.
 # Replace 'your-username/repo-name' with your GitHub username and repository name
 # video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition/contents')
 
-def process(image):
+def process_hpr(image):
     image.flags.writeable = False
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     results = model.process(image)
@@ -57,7 +57,7 @@ def process(image):
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
     if blurring_mode == "Yes":
-        image = bluring_face(image) 
+        image = cf.bluring_face(image) 
 
     # Vérifier si des landmarks ont été détectés
     if results.pose_landmarks:
@@ -72,7 +72,7 @@ def process(image):
     print(results.pose_landmarks)
 
     landmarks = results.pose_landmarks.landmark
-    list_angle = angle_extraction(landmarks)
+    list_angle = cf.angle_extraction(landmarks)
     current_time = datetime.now()
     df.loc[current_time] = list_angle
 
@@ -82,7 +82,7 @@ def process(image):
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img = classes_functions.process(img)
+        img = classes_functions.process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
