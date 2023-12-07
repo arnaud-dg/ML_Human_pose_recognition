@@ -22,7 +22,10 @@ fl = cf.FaceLandmarks()
 # WebRTC configuration
 RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
 # Dataframe
-df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+# Avant la définition de vos fonctions, initialisez une variable de session pour le DataFrame
+if 'df' not in st.session_state:
+    st.session_state.df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+
 
 # Streamlit page configuration
 st.set_page_config(
@@ -143,15 +146,15 @@ def process_hpr(image):
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks)
     current_time = datetime.now()
-    df.loc[current_time] = list_angle
+    st.session_state.df.loc[current_time] = list_angle
 
-    return cv2.flip(image, 1), df
+    return cv2.flip(image, 1)
 
 # Class to process each frame of the video
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img, df = process_hpr(img)
+        img = process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
@@ -197,9 +200,11 @@ with tab1:
         
 with tab2:
     st.write("No report yet")
-    if df.shape[1] > 0:
-        st.dataframe(df)    
-        
+    df_container = st.empty()  # Créer un conteneur vide pour le DataFrame  
+
+# À l'extérieur des onglets, mettez à jour le conteneur avec le DataFrame actuel
+df_container.dataframe(st.session_state.df)
+
 # # Render curl counter
 # # Setup status box
 # cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
