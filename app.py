@@ -137,15 +137,14 @@ def process_hpr(image):
             results.pose_landmarks,
             mp_pose.POSE_CONNECTIONS,
             mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
-            mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+            mp_drawing.DrawingSpec(color=(0,128,0), thickness=2, circle_radius=2)
         )
-
-    print(results.pose_landmarks)
 
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks)
     current_time = datetime.now()
     df.loc[current_time] = list_angle
+    print(df.shape)
 
     return cv2.flip(image, 1)
 
@@ -167,7 +166,7 @@ with tab1:
             video_processor_factory=VideoProcessor,
             rtc_configuration=RTC_CONFIGURATION,
             media_stream_constraints={"video": True, "audio": False},
-            # async_processing=True,
+            async_processing=True,
         )
     else:
         # Dropdown to select the video
