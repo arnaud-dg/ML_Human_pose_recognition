@@ -72,27 +72,33 @@ with tab1:
         )
     else:
         # Dropdown to select the video
-        # selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
-        uploaded_video = st.file_uploader("Upload a video", type=["mp4", "avi", "mov"])
+        selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
 
-        if uploaded_video is not None:
-            # Lire la vidéo
-            video_cap = cv2.VideoCapture(uploaded_video.name)
-
-            # Lecture frame par frame
+        # Process and display the selected video
+        if selected_video:
+            # Ouvrir la vidéo
+            video_url = video_urls[selected_video]
+            video_stream = cv2.VideoCapture(video_url)
+    
+            # Créer un espace pour afficher la frame traitée
             stframe = st.empty()
-            while video_cap.isOpened():
-                ret, frame = video_cap.read()
+    
+            # Lecture frame par frame
+            while video_stream.isOpened():
+                ret, frame = video_stream.read()
                 if not ret:
                     break
-
-                    img = frame.to_ndarray(format="bgr24")
-                    # print(img)
-                    img = process(img)
-
-                    # Afficher la frame traitée
-                    stframe.image(img, channels="BGR", use_column_width=True)
     
+                # Appliquer la fonction process() à la frame
+                processed_frame = process(frame)
+    
+                # Afficher la frame traitée
+                stframe.image(processed_frame, channels="BGR", use_column_width=True)
+    
+            # Relâcher la ressource vidéo
+            video_stream.release()
+        
 with tab2:
     st.write("No report yet")
     st.dataframe(df)    
+    st.write(df.shape)
