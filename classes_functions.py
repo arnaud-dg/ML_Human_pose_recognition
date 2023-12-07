@@ -139,32 +139,7 @@ def bluring_face(frame):
     else:
         return frame  # Retourne l'image originale si aucun visage n'est détecté
     
-def process(image):
-    image.flags.writeable = False
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    results = model.process(image)
-    image.flags.writeable = True
-    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
 
-    if blurring_mode == "Yes":
-        image = bluring_face(image) 
-
-    # Vérifier si des landmarks ont été détectés
-    if results.pose_landmarks:
-        mp_drawing.draw_landmarks(
-            image,
-            results.pose_landmarks,
-            mp_pose.POSE_CONNECTIONS,
-            mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
-            mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
-        )
-
-    landmarks = results.pose_landmarks.landmark
-    list_angle = angle_extraction(landmarks)
-    current_time = datetime.now()
-    df.loc[current_time] = list_angle
-
-    return cv2.flip(image, 1)
 
 # Render curl counter
 # Setup status box

@@ -6,7 +6,6 @@ import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 import classes_functions
-# from classes_functions import FaceLandmarks
 from datetime import datetime
 import requests
 
@@ -41,14 +40,43 @@ min_detection_confidence = st.sidebar.slider("Detection Threshold :", 0.0, 1.0, 
 min_tracking_confidence = st.sidebar.slider("Tracking Threshold :", 0.0, 1.0, 0.5, 0.1)
 
 # Function to get the raw URL of the video file from GitHub
-def get_video_url(github_path):
-    content_url = f"https://api.github.com/repos/{github_path}/contents/"
-    repo_content = requests.get(content_url).json()
-    video_urls = {item['name']: item['download_url'] for item in repo_content if item['name'].endswith('.mp4')}
-    return video_urls
+# def get_video_url(github_path):
+#     content_url = f"https://api.github.com/repos/{github_path}/contents/"
+#     repo_content = requests.get(content_url).json()
+#     video_urls = {item['name']: item['download_url'] for item in repo_content if item['name'].endswith('.mp4')}
+#     return video_urls
 
 # Replace 'your-username/repo-name' with your GitHub username and repository name
-video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition/contents')
+# video_urls = get_video_url('arnaud-dg/ML_Human_pose_recognition/contents')
+
+def process(image):
+    image.flags.writeable = False
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+    results = model.process(image)
+    image.flags.writeable = True
+    image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+
+    if blurring_mode == "Yes":
+        image = bluring_face(image) 
+
+    # Vérifier si des landmarks ont été détectés
+    if results.pose_landmarks:
+        mp_drawing.draw_landmarks(
+            image,
+            results.pose_landmarks,
+            mp_pose.POSE_CONNECTIONS,
+            mp_drawing.DrawingSpec(color=(245,117,66), thickness=2, circle_radius=2), #2,138,15
+            mp_drawing.DrawingSpec(color=(245,66,230), thickness=2, circle_radius=2)
+        )
+
+    print(results.pose_landmarks)
+
+    landmarks = results.pose_landmarks.landmark
+    list_angle = angle_extraction(landmarks)
+    current_time = datetime.now()
+    df.loc[current_time] = list_angle
+
+    return cv2.flip(image, 1)
 
 # Class to process each frame of the video
 class VideoProcessor():
