@@ -6,7 +6,7 @@ import mediapipe as mp
 import streamlit as st
 from streamlit_webrtc import webrtc_streamer, WebRtcMode, RTCConfiguration
 import classes_functions
-# from classes_functions import FaceLandmarks
+from classes_functions import FaceLandmarks
 from datetime import datetime
 import requests
 
