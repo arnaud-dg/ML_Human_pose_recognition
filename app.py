@@ -142,18 +142,16 @@ def process_hpr(image):
 
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks)
-    print(list_angle)
     current_time = datetime.now()
     df.loc[current_time] = list_angle
-    print(df.shape)
 
-    return cv2.flip(image, 1)
+    return cv2.flip(image, 1), df
 
 # Class to process each frame of the video
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
-        img = process_hpr(img)
+        img, df = process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
@@ -199,9 +197,9 @@ with tab1:
         
 with tab2:
     st.write("No report yet")
-    st.dataframe(df)    
-    st.write(df.shape)
-
+    if df.shape[1] > 0:
+        st.dataframe(df)    
+        
 # # Render curl counter
 # # Setup status box
 # cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
