@@ -12,20 +12,28 @@ import requests
 # Constant
 min_detection_confidence=0.5 
 min_tracking_confidence=0.5
-# Initializing the mediapipe pose class
+# WebRTC configuration
+RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
+# Dataframe
+# Avant la définition de vos fonctions, initialisez une variable de session pour le DataFrame
+# if 'df' not in st.session_state:
+#     st.session_state.df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
+
+# Initializing the mediapipe pose class + Load the model
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_face_detection = mp.solutions.face_detection
 mp_pose = mp.solutions.pose
 model = mp_pose.Pose() #min_detection_confidence, min_tracking_confidence)
 fl = cf.FaceLandmarks()
-# WebRTC configuration
-RTC_CONFIGURATION = RTCConfiguration({"iceServers": [{"urls": ["stun:stun.l.google.com:19302"]}]})
-# Dataframe
-# Avant la définition de vos fonctions, initialisez une variable de session pour le DataFrame
-if 'df' not in st.session_state:
-    st.session_state.df = pd.DataFrame(columns=['angle_arm_l', 'angle_arm_r', 'angle_leg_l', 'angle_leg_r', 'distance_shoulder', 'distance_hip'])
 
+# Load the model (only executed once!)
+# NOTE: Don't set ttl or max_entries in this case
+# @st.cache
+# def load_model():
+# 	  return torch.load("path/to/model.pt")
+# model = load_model()
 
 # Streamlit page configuration
 st.set_page_config(
@@ -147,7 +155,9 @@ def process_hpr(image):
     print(landmarks)
     list_angle = angle_extraction(landmarks)
     current_time = datetime.now()
-    st.session_state.df.loc[current_time] = list_angle
+    df.loc[current_time] = list_angle
+    # st.session_state.df.loc[current_time] = list_angle
+    print(list_angle, df.shape)
 
     return cv2.flip(image, 1)
 
@@ -201,7 +211,8 @@ with tab1:
         
 with tab2:
     st.write("No report yet")
-    df_container = st.empty()  # Créer un conteneur vide pour le DataFrame  
+    st.dataframe(df)
+    # df_container = st.empty()  # Créer un conteneur vide pour le DataFrame  
 
 # À l'extérieur des onglets, mettez à jour le conteneur avec le DataFrame actuel
 # df_container.dataframe(st.session_state.df)
