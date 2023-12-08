@@ -154,6 +154,8 @@ def process_hpr(image):
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks) # [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, distance_shoulder, distance_hip]
 
+    print(frame.shape)
+
     # Affiche à l'écran un message
     # Setup status box
     message = "Good posture"
