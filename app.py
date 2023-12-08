@@ -156,16 +156,16 @@ def process_hpr(image):
 
     # Affiche à l'écran un message
     # Setup status box
-    # message = "Good posture"
-    # cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
-    # if angle_arm_l >= 80 or angle_arm_r >= 80 :
-    #     max_value = max(angle_arm_l, angle_arm_r)
-    #     message = "Warning ! Dangerous shoulder angle detected: " + str(max_value) + "°)"
-    #     cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
-    # elif angle_leg_l >= 70 or angle_leg_r >= 70 :
-    #     max_value = max(angle_leg_l, angle_leg_r)
-    #     message = "Warning ! Low posture detected: " + str(max_value) + "°)"
-    # cv2.putText(image, message, (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+    message = "Good posture"
+    cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
+    if angle_arm_l >= 80 or angle_arm_r >= 80 :
+        max_value = max(angle_arm_l, angle_arm_r)
+        message = "Warning ! Dangerous shoulder angle detected: " + str(max_value) + "°)"
+        cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
+    elif angle_leg_l >= 70 or angle_leg_r >= 70 :
+        max_value = max(angle_leg_l, angle_leg_r)
+        message = "Warning ! Low posture detected: " + str(max_value) + "°)"
+    cv2.putText(image, message, (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
 
     # current_time = datetime.now()
     # df.loc[current_time] = list_angle
