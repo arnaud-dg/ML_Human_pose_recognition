@@ -137,6 +137,7 @@ def process_hpr(image):
     results = model.process(image)
     image.flags.writeable = True
     image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+    print(results)
 
     if blurring_mode == "Yes":
         image = bluring_face(image) 
@@ -157,7 +158,7 @@ def process_hpr(image):
     current_time = datetime.now()
     df.loc[current_time] = list_angle
     # st.session_state.df.loc[current_time] = list_angle
-    print(list_angle, df.shape)
+    # print(list_angle, df.shape)
 
     return cv2.flip(image, 1)
 
