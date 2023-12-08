@@ -152,11 +152,25 @@ def process_hpr(image):
         )
 
     landmarks = results.pose_landmarks.landmark
-    list_angle = angle_extraction(landmarks)
-    current_time = datetime.now()
-    df.loc[current_time] = list_angle
-    # st.session_state.df.loc[current_time] = list_angle
-    print(list_angle, df.shape)
+    list_angle = angle_extraction(landmarks) # [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, distance_shoulder, distance_hip]
+
+    # Affiche à l'écran un message
+    # Setup status box
+    message = "Good posture"
+    
+    cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
+    if angle_arm_l >= 80 or angle_arm_r >= 80 :
+        max_value = max(angle_arm_l, angle_arm_r)
+        message = "Warning ! Dangerous shoulder angle detected: " + str(max_value) + "°)"
+        cv2.rectangle(image, (0,0), (255,73), (245,117,16), -1)
+    elif angle_leg_l >= 70 or angle_leg_r >= 70 :
+        max_value = max(angle_leg_l, angle_leg_r)
+        message = "Warning ! Low posture detected: " + str(max_value) + "°)"
+    cv2.putText(image, message, (15,12), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+
+    # current_time = datetime.now()
+    # df.loc[current_time] = list_angle
+    # st.session_state.df.loc[current_time] = list_angle 
 
     return cv2.flip(image, 1)
 
@@ -165,6 +179,7 @@ class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
         img = process_hpr(img)
+        print(blurring_mode)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
