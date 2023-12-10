@@ -206,7 +206,7 @@ with tab1:
             video_processor_factory=VideoProcessor,
             rtc_configuration=RTC_CONFIGURATION,
             media_stream_constraints={"video": True, "audio": False},
-            # async_processing=True,
+            async_processing=True,
         )
     else:
         # Dropdown to select the video
