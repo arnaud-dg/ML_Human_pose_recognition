@@ -154,8 +154,7 @@ def process_hpr(image):
     landmarks = results.pose_landmarks.landmark
     list_angle = angle_extraction(landmarks) # [angle_arm_l, angle_arm_r, angle_leg_l, angle_leg_r, distance_shoulder, distance_hip]
 
-    print(image.shape)
-
+    print(list_angle)
     # Affiche à l'écran un message
     # Setup status box
     # message = "Good posture"
@@ -180,7 +179,6 @@ class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
         img = process_hpr(img)
-        print(img.shape)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
