@@ -174,10 +174,22 @@ def process_hpr(image):
 
     return cv2.flip(image, 1)
 
+def resize_image(image):
+    scale_percent = 60 # percent of original size
+    width = int(img.shape[1] * scale_percent / 100)
+    height = int(img.shape[0] * scale_percent / 100)
+    dim = (width, height)
+    
+    # resize image
+    resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
+
+    return resized
+
 # Class to process each frame of the video
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
+        img = resize_image(img)
         img = process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
