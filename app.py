@@ -121,9 +121,9 @@ def angle_extraction(landmarks):
     angle_leg_r = calculate_angle(ankle_r, knee_r, hip_r)
     angle_leg_r = np.round(angle_leg_r,1)
     # Ratio back
-    soulder_l = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
+    shoulder_l = [landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.LEFT_SHOULDER.value].y]
     hip_l = [landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].x, landmarks[mp_pose.PoseLandmark.LEFT_HIP.value].y]
-    soulder_r = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
+    shoulder_r = [landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_SHOULDER.value].y]
     hip_r = [landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].x, landmarks[mp_pose.PoseLandmark.RIGHT_HIP.value].y]
     distance_shoulder = distance(shoulder_l, shoulder_r)
     distance_hip = distance(hip_l, hip_r)
@@ -180,7 +180,7 @@ class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
         img = process_hpr(img)
-        print(blurring_mode)
+        print(img.shape)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
 tab1, tab2  = st.tabs(["Acquisition", "Report"])
@@ -198,31 +198,31 @@ with tab1:
         )
     else:
         # Dropdown to select the video
-        selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
-
+        # selected_video = st.selectbox('Select a Video', options=list(video_urls.keys()))
+        st.write("No video yet")
         # Process and display the selected video
-        if selected_video:
-            # Ouvrir la vidéo
-            video_url = video_urls[selected_video]
-            video_stream = cv2.VideoCapture(video_url)
+        # if selected_video:
+        #     # Ouvrir la vidéo
+        #     video_url = video_urls[selected_video]
+        #     video_stream = cv2.VideoCapture(video_url)
     
-            # Créer un espace pour afficher la frame traitée
-            stframe = st.empty()
+        #     # Créer un espace pour afficher la frame traitée
+        #     stframe = st.empty()
     
-            # Lecture frame par frame
-            while video_stream.isOpened():
-                ret, frame = video_stream.read()
-                if not ret:
-                    break
+        #     # Lecture frame par frame
+        #     while video_stream.isOpened():
+        #         ret, frame = video_stream.read()
+        #         if not ret:
+        #             break
     
-                # Appliquer la fonction process() à la frame
-                processed_frame = process(frame)
+        #         # Appliquer la fonction process() à la frame
+        #         processed_frame = process(frame)
     
-                # Afficher la frame traitée
-                stframe.image(processed_frame, channels="BGR", use_column_width=True)
+        #         # Afficher la frame traitée
+        #         stframe.image(processed_frame, channels="BGR", use_column_width=True)
     
-            # Relâcher la ressource vidéo
-            video_stream.release()
+        #     # Relâcher la ressource vidéo
+        #     video_stream.release()
         
 with tab2:
     st.write("No report yet")
