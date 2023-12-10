@@ -189,7 +189,9 @@ def resize_image(image):
 class VideoProcessor():
     def recv(self, frame):
         img = frame.to_ndarray(format="bgr24")
+        print("before")
         img = resize_image(img)
+        print("after")
         img = process_hpr(img)
         return av.VideoFrame.from_ndarray(img, format="bgr24")
     
